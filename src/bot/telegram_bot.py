@@ -11,6 +11,7 @@ from telegram.ext import (ApplicationBuilder, CommandHandler, MessageHandler,
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from src.models.sentiment_analyzer import SentimentAnalyzer
 from src.models.linguistic_detector import LinguisticPatternDetector
+from src.models.type_detector import FakeReviewTypeDetector
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -164,6 +165,15 @@ def analyze_review(text, rating=None):
         lines.append("")
         lines.append("🚩 No suspicious patterns detected ✅")
     
+    if authenticity_score < 60:
+        type_result = type_detector.detect_type(text, sentiment=sentiment)
+        if type_result['type'] != 'none_detected':
+            lines.append("")
+            lines.append(f"🏷️ Likely Type: {type_result['type_label']}")
+            lines.append(f"   Confidence: {type_result['confidence']}%")
+            for r in type_result['reasoning']:
+                lines.append(f"   • {r}")
+
     lines.append("")
     lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━")
     
@@ -270,6 +280,9 @@ async def receive_rating(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def load_models():
     global classifier, tfidf, label_encoder, sentiment_analyzer, linguistic_detector
+    global type_detector
+    type_detector = FakeReviewTypeDetector()
+    print("  Type detector loaded")
     
     print("Loading models...")
     
