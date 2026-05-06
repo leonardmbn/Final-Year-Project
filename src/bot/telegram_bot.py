@@ -230,6 +230,7 @@ async def about_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def receive_review(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
     
+    
     if len(text) < 15:
         await update.message.reply_text("⚠️ Please paste a longer review (at least 15 characters).")
         return AWAITING_REVIEW

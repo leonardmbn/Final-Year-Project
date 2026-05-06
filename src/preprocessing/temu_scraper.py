@@ -25,7 +25,9 @@ def scrape_temu_reviews(driver, product_url, max_reviews=200):
     reviews = []
     
     driver.get(product_url)
-    time.sleep(random.uniform(5, 8))
+    print("  >>> If CAPTCHA appears, solve it manually in the browser <<<")
+    print("  >>> You have 30 seconds <<<")
+    time.sleep(30)
     
     # Get product title
     product_title = ""
